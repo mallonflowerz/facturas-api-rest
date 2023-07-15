@@ -53,6 +53,9 @@ public class SecurityConfig {
                         .requestMatchers("/factura").hasAnyRole("ADMIN", "CONTADOR")
                         .requestMatchers("/detalle").hasAnyRole("ADMIN", "CONTADOR")
 
+                        // backup
+                        .requestMatchers("/backup").hasAnyRole("ADMIN")
+
                         .anyRequest()
                         .authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
