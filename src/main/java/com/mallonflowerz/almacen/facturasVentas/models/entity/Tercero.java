@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ import lombok.*;
 @Builder
 @Data
 @Entity
-@Table(name = "terceros", indexes = @Index(name = "tercero_uq", columnList = "nit", unique = true))
+@Table(name = "tercero", indexes = @Index(name = "tercero_uq", columnList = "nit", unique = true))
 public class Tercero {
 
     @Id
@@ -56,5 +57,8 @@ public class Tercero {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime fechaCreacion;
+
+    @UpdateTimestamp
+    private LocalDateTime ultimaModificacion;
 
 }

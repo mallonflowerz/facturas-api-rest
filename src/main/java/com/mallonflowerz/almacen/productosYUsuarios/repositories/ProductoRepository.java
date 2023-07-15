@@ -12,4 +12,6 @@ public interface ProductoRepository extends JpaRepository<Producto, UUID>{
     Optional<Producto> findByCodigo(String codigo);
 
     boolean existsByCodigo(String codigo);
+
+    Optional<Producto> findByNombreProducto(String nombre);
 }

@@ -38,4 +38,5 @@ public class TerceroDTO {
     private String paisResidencia;
 
     private LocalDate fechaNacimiento;
+
 }

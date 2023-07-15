@@ -41,9 +41,17 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authorize) -> authorize
 
-                        .requestMatchers("/usuario").permitAll()
-                        .requestMatchers("/producto").hasAnyRole("ADMIN")
+                        // autenticacion
                         .requestMatchers("/auth/**").permitAll()
+
+                        // productosYUsuarios
+                        .requestMatchers("/usuario").hasAnyRole("ADMIN")
+                        .requestMatchers("/producto").hasAnyRole("ADMIN")
+                        
+                        // facturasVentas
+                        .requestMatchers("/tercero").hasAnyRole("ADMIN", "CONTADOR")
+                        .requestMatchers("/factura").hasAnyRole("ADMIN", "CONTADOR")
+                        .requestMatchers("/detalle").hasAnyRole("ADMIN", "CONTADOR")
 
                         .anyRequest()
                         .authenticated())
