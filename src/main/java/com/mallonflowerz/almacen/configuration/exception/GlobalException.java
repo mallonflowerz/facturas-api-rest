@@ -25,6 +25,12 @@ public class GlobalException {
                 .body(new Response("Error: " + ex.getMessage()));
     }
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Response> handlerTokenExpired(TokenExpiredException ex){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new Response("Internal Error: " + ex.getMessage()));
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Response> handlerUserNotFound(EntityNotFoundException ex) {
         return ResponseEntity.status(404)
@@ -32,8 +38,8 @@ public class GlobalException {
     }
 
     @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<Response> handlerUserExits(EntityExistsException ex){
-        return ResponseEntity.status(500).body(new Response("Error: "+ ex.getMessage()));
+    public ResponseEntity<Response> handlerUserExits(EntityExistsException ex) {
+        return ResponseEntity.status(500).body(new Response("Error: " + ex.getMessage()));
     }
 
 }

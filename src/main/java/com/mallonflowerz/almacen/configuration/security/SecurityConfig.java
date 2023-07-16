@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .logout()
-                .logoutUrl("auth/logout").permitAll()
+                .logoutUrl("/auth/logout").permitAll()
                 .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
 

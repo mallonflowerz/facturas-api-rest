@@ -28,4 +28,7 @@ public class DatabaseConfig {
     @Value("${almacen.mysql_path}")
     private String MYSQL_PATH;
 
+    @Value("${almacen.limit_devices}")
+    private Integer LIMIT_DEVICES;
+
 }

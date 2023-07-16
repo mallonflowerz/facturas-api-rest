@@ -29,4 +29,7 @@ public class HistoryLogins {
 
     private LocalDateTime fechaInicioSesion;
 
+    @Column(nullable = false)
+    private String token;
+
 }

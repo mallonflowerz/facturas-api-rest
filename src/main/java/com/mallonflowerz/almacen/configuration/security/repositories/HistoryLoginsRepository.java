@@ -10,4 +10,6 @@ import com.mallonflowerz.almacen.configuration.security.model.HistoryLogins;
 public interface HistoryLoginsRepository extends JpaRepository<HistoryLogins, UUID>{
     
     Optional<HistoryLogins> findByEmail(String email);
+
+    Optional<HistoryLogins> findByToken(String token);
 }
