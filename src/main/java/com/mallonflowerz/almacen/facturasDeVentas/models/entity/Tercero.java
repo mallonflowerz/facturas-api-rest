@@ -1,4 +1,4 @@
-package com.mallonflowerz.almacen.facturasVentas.models.entity;
+package com.mallonflowerz.almacen.facturasDeVentas.models.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

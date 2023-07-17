@@ -1,9 +1,9 @@
-package com.mallonflowerz.almacen.facturasVentas.models.mapper;
+package com.mallonflowerz.almacen.facturasDeVentas.models.mapper;
 
 import org.springframework.stereotype.Service;
 
-import com.mallonflowerz.almacen.facturasVentas.models.dto.FacturaDTO;
-import com.mallonflowerz.almacen.facturasVentas.models.entity.Factura;
+import com.mallonflowerz.almacen.facturasDeVentas.models.dto.FacturaDTO;
+import com.mallonflowerz.almacen.facturasDeVentas.models.entity.Factura;
 import com.mallonflowerz.almacen.productosYUsuarios.models.mapper.GenericMapper;
 
 @Service

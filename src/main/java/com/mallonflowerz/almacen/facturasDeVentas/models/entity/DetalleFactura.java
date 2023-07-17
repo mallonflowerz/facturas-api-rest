@@ -1,4 +1,4 @@
-package com.mallonflowerz.almacen.facturasVentas.models.entity;
+package com.mallonflowerz.almacen.facturasDeVentas.models.entity;
 
 import java.math.BigDecimal;
 import java.util.UUID;

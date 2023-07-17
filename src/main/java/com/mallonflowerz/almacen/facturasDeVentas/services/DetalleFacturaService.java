@@ -1,4 +1,4 @@
-package com.mallonflowerz.almacen.facturasVentas.services;
+package com.mallonflowerz.almacen.facturasDeVentas.services;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mallonflowerz.almacen.facturasVentas.models.entity.DetalleFactura;
-import com.mallonflowerz.almacen.facturasVentas.repositories.DetalleFacturaRepository;
+import com.mallonflowerz.almacen.facturasDeVentas.models.entity.DetalleFactura;
+import com.mallonflowerz.almacen.facturasDeVentas.repositories.DetalleFacturaRepository;
 import com.mallonflowerz.almacen.productosYUsuarios.models.entity.Producto;
 import com.mallonflowerz.almacen.productosYUsuarios.repositories.ProductoRepository;
 

@@ -1,4 +1,4 @@
-package com.mallonflowerz.almacen.facturasVentas.controllers;
+package com.mallonflowerz.almacen.facturasDeVentas.controllers;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -15,15 +15,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mallonflowerz.almacen.configuration.security.services.JwtUtilService;
 import com.mallonflowerz.almacen.configuration.validation.ResultError;
-import com.mallonflowerz.almacen.facturasVentas.models.dto.DetalleFacturaDTO;
-import com.mallonflowerz.almacen.facturasVentas.models.entity.DetalleFactura;
-import com.mallonflowerz.almacen.facturasVentas.models.mapper.DetalleFacturaMapper;
-import com.mallonflowerz.almacen.facturasVentas.services.DetalleFacturaService;
+import com.mallonflowerz.almacen.facturasDeVentas.models.dto.DetalleFacturaDTO;
+import com.mallonflowerz.almacen.facturasDeVentas.models.entity.DetalleFactura;
+import com.mallonflowerz.almacen.facturasDeVentas.models.mapper.DetalleFacturaMapper;
+import com.mallonflowerz.almacen.facturasDeVentas.services.DetalleFacturaService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -35,18 +37,22 @@ public class DetalleController {
 
     private final DetalleFacturaService dfService;
     private final DetalleFacturaMapper detalleMapper;
+    private final JwtUtilService jwtUtilService;
 
     @GetMapping
     public ResponseEntity<Page<DetalleFactura>> listarFacturas(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size) {
+            @RequestParam(defaultValue = "9") int size, @RequestHeader("Authorization") String auth) {
 
+        jwtUtilService.authVerification(auth);
         Pageable pageable = PageRequest.of(page, size);
         Page<DetalleFactura> facturas = dfService.listarDetalleFacturas(pageable);
         return ResponseEntity.ok().body(facturas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DetalleFactura> obtenerFactura(@PathVariable UUID id) {
+    public ResponseEntity<DetalleFactura> obtenerFactura(@PathVariable UUID id,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Optional<DetalleFactura> factura = dfService.obtenerDetalleFacturaPorId(id);
         if (factura.isPresent()) {
             return ResponseEntity.ok().body(factura.get());
@@ -56,10 +62,11 @@ public class DetalleController {
 
     @PostMapping
     public ResponseEntity<DetalleFactura> guardarFactura(@Valid @RequestBody DetalleFacturaDTO facturaDTO,
-            BindingResult result) {
+            BindingResult result, @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
         }
+        jwtUtilService.authVerification(auth);
         boolean guardado = dfService.guardarDetalleFactura(detalleMapper.dtoToPojo(facturaDTO));
         if (guardado) {
             return ResponseEntity.ok().build();
@@ -69,10 +76,12 @@ public class DetalleController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Boolean> actualizarFactura(@PathVariable UUID id,
-            @Valid @RequestBody DetalleFacturaDTO facturaDTO, BindingResult result) {
+            @Valid @RequestBody DetalleFacturaDTO facturaDTO, BindingResult result,
+            @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
         }
+        jwtUtilService.authVerification(auth);
         if (dfService.actualizarDetalleFactura(id, detalleMapper.dtoToPojo(facturaDTO))) {
             return ResponseEntity.status(HttpStatus.CREATED).body(true);
         }
@@ -80,7 +89,9 @@ public class DetalleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> eliminarFactura(@PathVariable UUID id) {
+    public ResponseEntity<Boolean> eliminarFactura(@PathVariable UUID id,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         if (dfService.eliminarDetalleFactura(id)) {
             return ResponseEntity.ok().body(true);
         }

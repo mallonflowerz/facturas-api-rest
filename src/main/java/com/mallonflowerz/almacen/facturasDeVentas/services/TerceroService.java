@@ -1,4 +1,4 @@
-package com.mallonflowerz.almacen.facturasVentas.services;
+package com.mallonflowerz.almacen.facturasDeVentas.services;
 
 import java.util.Optional;
 
@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mallonflowerz.almacen.facturasVentas.models.entity.Tercero;
-import com.mallonflowerz.almacen.facturasVentas.repositories.TerceroRepository;
+import com.mallonflowerz.almacen.facturasDeVentas.models.entity.Tercero;
+import com.mallonflowerz.almacen.facturasDeVentas.repositories.TerceroRepository;
 
 import lombok.AllArgsConstructor;
 

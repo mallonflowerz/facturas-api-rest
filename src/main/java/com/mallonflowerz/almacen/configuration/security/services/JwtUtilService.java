@@ -6,15 +6,22 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.mallonflowerz.almacen.configuration.security.repositories.HistoryLoginsRepository;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
+@AllArgsConstructor
 @Service
 public class JwtUtilService {
+
+    private final HistoryLoginsRepository hlRepo;
 
     // LLAVE_MUY_SECRETA => [Base64] => TExBVkVfTVVZX1NFQ1JFVEE=
     private static final String JWT_SECRET_KEY = "TExBVkVfTVVZX1NFQ1JFVEE=";
@@ -44,9 +51,23 @@ public class JwtUtilService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         // Agregando informacion adicional como "claim"
+        String email = userDetails.getUsername();
         var rol = userDetails.getAuthorities().stream().collect(Collectors.toList()).get(0);
         claims.put("rol", rol);
+        claims.put("email", email);
         return createToken(claims, userDetails.getUsername());
+    }
+
+    public void authVerification(String auth) {
+        String email = this.extractClaim(this.quitarBearer(auth), Claims::getSubject);
+        if (!hlRepo.findByEmail(email).isPresent()) {
+            throw new EntityNotFoundException(
+                    "No esta logeado o el token ha expirado, inicie sesion nuevamente");
+        }
+    }
+
+    private String quitarBearer(String token) {
+        return token.replace("Bearer ", "");
     }
 
     private String createToken(Map<String, Object> claims, String subject) {

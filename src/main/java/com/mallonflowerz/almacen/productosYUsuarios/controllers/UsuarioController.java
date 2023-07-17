@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mallonflowerz.almacen.configuration.security.services.JwtUtilService;
 import com.mallonflowerz.almacen.productosYUsuarios.models.Response;
 import com.mallonflowerz.almacen.productosYUsuarios.models.dto.UsuarioDTO;
 import com.mallonflowerz.almacen.productosYUsuarios.models.entity.Usuario;
@@ -34,9 +36,12 @@ public class UsuarioController {
 
     private final UsuarioService userService;
     private final UsuarioMapper mapper;
+    private final JwtUtilService jwtUtilService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> obtenerUsuario(@PathVariable UUID id) {
+    public ResponseEntity<UsuarioDTO> obtenerUsuario(@PathVariable UUID id,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Optional<Usuario> u = userService.obtenerUsuario(id);
         if (u.isPresent()) {
             return ResponseEntity.ok().body(mapper.pojoToDto(u.get()));
@@ -47,7 +52,9 @@ public class UsuarioController {
     @GetMapping
     public ResponseEntity<Page<UsuarioDTO>> mostrarTodosLosUsuarios(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size) {
+            @RequestParam(defaultValue = "9") int size,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Pageable pageable = PageRequest.of(page, size);
         Page<Usuario> usuarios = userService.obtenerTodosLosUsuarios(pageable);
         Page<UsuarioDTO> usersDTO = new PageImpl<>(
@@ -57,13 +64,18 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> guardarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> guardarUsuario(@RequestBody UsuarioDTO usuarioDTO,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         return ResponseEntity.ok().body(
                 mapper.pojoToDto(userService.guardarUsuario(mapper.dtoToPojo(usuarioDTO))));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response> actualizarUsuario(@PathVariable UUID id, @RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<Response> actualizarUsuario(@PathVariable UUID id,
+            @RequestBody UsuarioDTO usuarioDTO,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         if (userService.actualizarUsuario(id, mapper.dtoToPojo(usuarioDTO))) {
             return ResponseEntity.ok().body(new Response("Usuario actualizado con existe"));
         }
@@ -71,7 +83,9 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response> eliminarUsuario(@PathVariable UUID id) {
+    public ResponseEntity<Response> eliminarUsuario(@PathVariable UUID id,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         if (userService.eliminarUsuario(id)) {
             return ResponseEntity.ok().body(new Response("Usuario eliminado con exito"));
         }

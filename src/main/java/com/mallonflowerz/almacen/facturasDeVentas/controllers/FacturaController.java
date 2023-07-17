@@ -1,4 +1,4 @@
-package com.mallonflowerz.almacen.facturasVentas.controllers;
+package com.mallonflowerz.almacen.facturasDeVentas.controllers;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -15,14 +15,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mallonflowerz.almacen.configuration.security.services.JwtUtilService;
 import com.mallonflowerz.almacen.configuration.validation.ResultError;
-import com.mallonflowerz.almacen.facturasVentas.models.dto.FacturaDTO;
-import com.mallonflowerz.almacen.facturasVentas.models.entity.Factura;
-import com.mallonflowerz.almacen.facturasVentas.services.FacturaService;
+import com.mallonflowerz.almacen.facturasDeVentas.models.dto.FacturaDTO;
+import com.mallonflowerz.almacen.facturasDeVentas.models.entity.Factura;
+import com.mallonflowerz.almacen.facturasDeVentas.services.FacturaService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -33,18 +35,21 @@ import lombok.AllArgsConstructor;
 public class FacturaController {
 
     private final FacturaService facturaService;
+    private final JwtUtilService jwtUtilService;
 
     @GetMapping
     public ResponseEntity<Page<Factura>> listarFacturas(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size) {
-
+            @RequestParam(defaultValue = "9") int size, @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Pageable pageable = PageRequest.of(page, size);
         Page<Factura> facturas = facturaService.listarFacturas(pageable);
         return ResponseEntity.ok().body(facturas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Factura> obtenerFactura(@PathVariable UUID id) {
+    public ResponseEntity<Factura> obtenerFactura(@PathVariable UUID id,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Optional<Factura> factura = facturaService.obtenerFacturaPorId(id);
         if (factura.isPresent()) {
             return ResponseEntity.ok().body(factura.get());
@@ -53,10 +58,12 @@ public class FacturaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardarFactura(@Valid @RequestBody FacturaDTO facturaDTO, BindingResult result) {
+    public ResponseEntity<Void> guardarFactura(@Valid @RequestBody FacturaDTO facturaDTO, BindingResult result,
+            @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
         }
+        jwtUtilService.authVerification(auth);
         if (facturaService.guardarFactura(facturaDTO)) {
             return ResponseEntity.ok().build();
         }
@@ -65,10 +72,11 @@ public class FacturaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> actualizarFactura(@PathVariable UUID id, @Valid @RequestBody FacturaDTO facturaDTO,
-            BindingResult result) {
+            BindingResult result, @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
         }
+        jwtUtilService.authVerification(auth);
         if (facturaService.actualizarFactura(id, facturaDTO)) {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }
@@ -76,7 +84,9 @@ public class FacturaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> eliminarFactura(@PathVariable UUID id) {
+    public ResponseEntity<Boolean> eliminarFactura(@PathVariable UUID id,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         if (facturaService.eliminarFactura(id)) {
             return ResponseEntity.ok().body(true);
         }

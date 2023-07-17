@@ -1,4 +1,4 @@
-package com.mallonflowerz.almacen.facturasVentas.models.dto;
+package com.mallonflowerz.almacen.facturasDeVentas.models.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

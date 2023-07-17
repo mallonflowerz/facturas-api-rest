@@ -30,14 +30,17 @@ public class LogoutService implements LogoutHandler {
                     SecurityContextHolder.clearContext();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    SecurityContextHolder.clearContext();
                 }
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 try {
                     response.getWriter()
                             .write("Algo salio mal, el token en la cabecera es invalido o el usuario no esta logeado");
+                    SecurityContextHolder.clearContext();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    SecurityContextHolder.clearContext();
                 }
             }
 

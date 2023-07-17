@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mallonflowerz.almacen.configuration.security.services.JwtUtilService;
 import com.mallonflowerz.almacen.productosYUsuarios.models.Response;
 import com.mallonflowerz.almacen.productosYUsuarios.models.dto.ProductoDTO;
 import com.mallonflowerz.almacen.productosYUsuarios.models.entity.Producto;
@@ -34,12 +36,13 @@ public class ProductoController {
 
     private final ProductoService productoService;
     private final ProductoMapper mapper;
+    private final JwtUtilService jwtUtilService;
 
     @GetMapping
     public ResponseEntity<Page<ProductoDTO>> listarProductos(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size) {
-
+            @RequestParam(defaultValue = "9") int size, @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Pageable pageable = PageRequest.of(page, size);
         Page<Producto> p = productoService.listarTodosLosProductos(pageable);
         Page<ProductoDTO> pDTO = new PageImpl<>(
@@ -48,7 +51,9 @@ public class ProductoController {
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<?> verProductoPorCodigo(@PathVariable String codigo) {
+    public ResponseEntity<?> verProductoPorCodigo(@PathVariable String codigo,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Optional<Producto> o = productoService.verProductoPorCodigo(codigo);
         if (o.isPresent()) {
             return ResponseEntity.ok().body(mapper.pojoToDto(o.get()));
@@ -57,7 +62,9 @@ public class ProductoController {
     }
 
     @GetMapping("/disp/{codigo}")
-    public ResponseEntity<Boolean> buscarCodigoDisponible(@PathVariable String codigo) {
+    public ResponseEntity<Boolean> buscarCodigoDisponible(@PathVariable String codigo,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         boolean disponible = productoService.codigoDisponible(codigo);
         if (disponible) {
             return ResponseEntity.ok().body(disponible);
@@ -66,7 +73,9 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductoDTO> crearProducto(@RequestBody ProductoDTO productoDTO) {
+    public ResponseEntity<ProductoDTO> crearProducto(@RequestBody ProductoDTO productoDTO,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         if (!productoService.codigoDisponible(productoDTO.getCodigo())) {
             throw new IllegalStateException();
         }
@@ -76,7 +85,8 @@ public class ProductoController {
 
     @PutMapping("/{codigo}")
     public ResponseEntity<?> actualizarProducto(@RequestBody ProductoDTO productoDTO,
-            @PathVariable String codigo) {
+            @PathVariable String codigo, @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Producto p = productoService.modificarProductoPorCodigo(codigo, mapper.dtoToPojo(productoDTO));
         if (p != null) {
             return ResponseEntity.ok().body(mapper.pojoToDto(p));
@@ -86,7 +96,8 @@ public class ProductoController {
 
     @PutMapping("/cambiarDisponible/{codigo}")
     public ResponseEntity<Response> cambiarDisponible(@PathVariable String codigo,
-            @RequestBody boolean disponible) {
+            @RequestBody boolean disponible, @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         boolean correcto = productoService.cambiarDisponible(codigo, disponible);
         String estado = disponible ? "DISPONIBLE" : "NO DISPONIBLE";
         if (correcto) {
@@ -97,7 +108,9 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{codigo}")
-    public ResponseEntity<Response> eliminarProducto(@PathVariable String codigo) {
+    public ResponseEntity<Response> eliminarProducto(@PathVariable String codigo,
+            @RequestHeader("Authorization") String auth) {
+        jwtUtilService.authVerification(auth);
         Optional<Producto> p = productoService.verProductoPorCodigo(codigo);
         if (p.isPresent()) {
             productoService.eliminarProductoPorId(p.get().getId());
