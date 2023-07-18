@@ -57,9 +57,9 @@ public class FacturaCompraController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<HttpStatus> actualizarFactura(@RequestBody FacturaCompraDTO facturaCompraDTO,
-            UUID id) {
+            @PathVariable UUID id) {
         if (facturaCompraService.actualizarFactura(facturaCompraDTO, id)) {
             return ResponseEntity.ok().build();
         }

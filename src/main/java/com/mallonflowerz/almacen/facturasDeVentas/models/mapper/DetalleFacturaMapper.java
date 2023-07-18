@@ -13,7 +13,7 @@ public class DetalleFacturaMapper implements GenericMapper<DetalleFactura, Detal
     public DetalleFactura dtoToPojo(DetalleFacturaDTO dto) {
         DetalleFactura detalle = DetalleFactura.builder()
                 .id(dto.getId())
-                .nombreProducto(dto.getNombreProducto())
+                .nombreProducto(dto.getNombreProducto().toUpperCase())
                 .cantidad(dto.getCantidad())
                 .build();
 
@@ -24,7 +24,7 @@ public class DetalleFacturaMapper implements GenericMapper<DetalleFactura, Detal
     public DetalleFacturaDTO pojoToDto(DetalleFactura pojo) {
         DetalleFacturaDTO detalle = DetalleFacturaDTO.builder()
                 .id(pojo.getId())
-                .nombreProducto(pojo.getNombreProducto())
+                .nombreProducto(pojo.getNombreProducto().toUpperCase())
                 .cantidad(pojo.getCantidad())
                 .build();
 

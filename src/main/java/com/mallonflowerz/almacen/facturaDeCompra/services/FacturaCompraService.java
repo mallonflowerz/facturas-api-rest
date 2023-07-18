@@ -1,5 +1,6 @@
 package com.mallonflowerz.almacen.facturaDeCompra.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,7 +17,6 @@ import com.mallonflowerz.almacen.facturasDeVentas.repositories.TerceroRepository
 import com.mallonflowerz.almacen.productosYUsuarios.models.entity.Producto;
 import com.mallonflowerz.almacen.productosYUsuarios.repositories.ProductoRepository;
 
-import jakarta.persistence.EntityExistsException;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -66,11 +66,20 @@ public class FacturaCompraService {
 
     private FacturaCompra existeFactura(FacturaCompraDTO facturaCompraDTO) {
         Optional<Tercero> tercero = terceroRepository.findByNit(facturaCompraDTO.getNitTercero());
-        List<Producto> productos = productoRepository.findAllById(facturaCompraDTO.getProductos());
+        List<Producto> productos = facturaCompraDTO.getProductos();
         productos.forEach(producto -> {
-            if (productoRepository.existsByCodigo(producto.getCodigo())) {
-                throw new EntityExistsException(String.format("El producto con el codigo %s y nombre %s ya existe",
-                        producto.getCodigo(), producto.getNombreProducto()));
+            Optional<Producto> option = productoRepository.findByCodigo(producto.getCodigo());
+            if (option.isPresent()) {
+                option.get().setNombreProducto(producto.getNombreProducto().toUpperCase());
+                option.get().setDescripcion(producto.getDescripcion());
+                BigDecimal cantidad = option.get().getCantidad().add(producto.getCantidad());
+                option.get().setCantidad(cantidad);
+                option.get().setValorCompra(producto.getValorCompra());
+                option.get().setValorVenta(producto.getValorVenta());
+                option.get().setDisponible(producto.getDisponible());
+                productoRepository.save(option.get());
+            } else {
+                productoRepository.save(producto);
             }
         });
         if (tercero.isPresent() && !productos.isEmpty()) {

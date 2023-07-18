@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.mallonflowerz.almacen.productosYUsuarios.models.entity.Producto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,7 +25,7 @@ public class FacturaCompraDTO {
     private String nitTercero;
 
     @NotEmpty(message = "no debe ser vacio")
-    private List<UUID> productos;
+    private List<Producto> productos;
 
     private LocalDateTime fechaDefactura;
 }

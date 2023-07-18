@@ -79,7 +79,6 @@ public class ProductoController {
         if (!productoService.codigoDisponible(productoDTO.getCodigo())) {
             throw new IllegalStateException();
         }
-        productoDTO.setNombreProducto(productoDTO.getNombreProducto().toUpperCase());
         productoService.crearProducto(mapper.dtoToPojo(productoDTO));
         return ResponseEntity.ok().build();
     }

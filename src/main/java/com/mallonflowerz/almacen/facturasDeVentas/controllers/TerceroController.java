@@ -70,6 +70,7 @@ public class TerceroController {
             ResultError.validaciones(result);
         }
         jwtUtilService.authVerification(auth);
+        terceroService.guardarTercero(terceroMapper.dtoToPojo(terceroDTO));
         return ResponseEntity.ok().build();
     }
 

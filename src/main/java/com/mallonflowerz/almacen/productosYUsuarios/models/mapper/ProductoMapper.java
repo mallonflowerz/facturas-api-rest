@@ -13,7 +13,7 @@ public class ProductoMapper implements GenericMapper<Producto, ProductoDTO> {
         Producto p = Producto.builder()
                 .id(dto.getId())
                 .codigo(dto.getCodigo())
-                .nombreProducto(dto.getNombreProducto())
+                .nombreProducto(dto.getNombreProducto().toUpperCase())
                 .descripcion(dto.getDescripcion())
                 .cantidad(dto.getCantidad())
                 .valorCompra(dto.getValorCompra())

@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@JsonPropertyOrder({ "nit", "razonSocial", "primerNombre",
+@JsonPropertyOrder({ "id", "nit", "razonSocial", "primerNombre",
         "segundoNombre", "primerApellido", "segundoApellido", "fechaNacimiento", "direccion",
         "ciudadResidencia", "paisResidencia" })
 public class TerceroDTO {
