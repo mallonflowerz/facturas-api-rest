@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mallonflowerz.almacen.configuration.security.services.JwtUtilService;
-import com.mallonflowerz.almacen.productosYUsuarios.models.Response;
 import com.mallonflowerz.almacen.productosYUsuarios.models.dto.UsuarioDTO;
 import com.mallonflowerz.almacen.productosYUsuarios.models.entity.Usuario;
 import com.mallonflowerz.almacen.productosYUsuarios.models.mapper.UsuarioMapper;
@@ -31,7 +31,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/api/v1/usuario")
 public class UsuarioController {
 
     private final UsuarioService userService;
@@ -46,7 +46,7 @@ public class UsuarioController {
         if (u.isPresent()) {
             return ResponseEntity.ok().body(mapper.pojoToDto(u.get()));
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException(String.format("El usuario con el id %s no existe", id));
     }
 
     @GetMapping
@@ -64,31 +64,30 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> guardarUsuario(@RequestBody UsuarioDTO usuarioDTO,
+    public ResponseEntity<HttpStatus> guardarUsuario(@RequestBody UsuarioDTO usuarioDTO,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
-        return ResponseEntity.ok().body(
-                mapper.pojoToDto(userService.guardarUsuario(mapper.dtoToPojo(usuarioDTO))));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response> actualizarUsuario(@PathVariable UUID id,
+    public ResponseEntity<HttpStatus> actualizarUsuario(@PathVariable UUID id,
             @RequestBody UsuarioDTO usuarioDTO,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         if (userService.actualizarUsuario(id, mapper.dtoToPojo(usuarioDTO))) {
-            return ResponseEntity.ok().body(new Response("Usuario actualizado con existe"));
+            return ResponseEntity.ok().build();
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException(String.format("El usuario con el id %s no existe", id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response> eliminarUsuario(@PathVariable UUID id,
+    public ResponseEntity<HttpStatus> eliminarUsuario(@PathVariable UUID id,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         if (userService.eliminarUsuario(id)) {
-            return ResponseEntity.ok().body(new Response("Usuario eliminado con exito"));
+            return ResponseEntity.ok().build();
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException(String.format("El usuario con el id %s no existe", id));
     }
 }

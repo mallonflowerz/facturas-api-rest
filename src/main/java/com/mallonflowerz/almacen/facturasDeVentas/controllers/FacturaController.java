@@ -26,12 +26,13 @@ import com.mallonflowerz.almacen.facturasDeVentas.models.dto.FacturaDTO;
 import com.mallonflowerz.almacen.facturasDeVentas.models.entity.Factura;
 import com.mallonflowerz.almacen.facturasDeVentas.services.FacturaService;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/factura")
+@RequestMapping("/api/v1/factura/venta")
 public class FacturaController {
 
     private final FacturaService facturaService;
@@ -54,11 +55,11 @@ public class FacturaController {
         if (factura.isPresent()) {
             return ResponseEntity.ok().body(factura.get());
         }
-        return ResponseEntity.notFound().build();
+        throw new EntityNotFoundException("No existe la factura con el id " + id);
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardarFactura(@Valid @RequestBody FacturaDTO facturaDTO, BindingResult result,
+    public ResponseEntity<HttpStatus> guardarFactura(@Valid @RequestBody FacturaDTO facturaDTO, BindingResult result,
             @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
@@ -67,29 +68,29 @@ public class FacturaController {
         if (facturaService.guardarFactura(facturaDTO)) {
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.badRequest().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> actualizarFactura(@PathVariable UUID id, @Valid @RequestBody FacturaDTO facturaDTO,
+    public ResponseEntity<HttpStatus> actualizarFactura(@PathVariable UUID id, @Valid @RequestBody FacturaDTO facturaDTO,
             BindingResult result, @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
         }
         jwtUtilService.authVerification(auth);
         if (facturaService.actualizarFactura(id, facturaDTO)) {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.ok().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new EntityNotFoundException(String.format("La factura con el id %s no existe", id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> eliminarFactura(@PathVariable UUID id,
+    public ResponseEntity<HttpStatus> eliminarFactura(@PathVariable UUID id,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         if (facturaService.eliminarFactura(id)) {
-            return ResponseEntity.ok().body(true);
+            return ResponseEntity.ok().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new EntityNotFoundException(String.format("La factura con el id %s no existe", id));
     }
 }

@@ -27,12 +27,13 @@ import com.mallonflowerz.almacen.facturasDeVentas.models.entity.Tercero;
 import com.mallonflowerz.almacen.facturasDeVentas.models.mapper.TerceroMapper;
 import com.mallonflowerz.almacen.facturasDeVentas.services.TerceroService;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/tercero")
+@RequestMapping("/api/v1/tercero")
 public class TerceroController {
 
     private final TerceroService terceroService;
@@ -42,8 +43,8 @@ public class TerceroController {
     @GetMapping
     public ResponseEntity<Page<TerceroDTO>> listarTerceros(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size, @RequestHeader("Authorization") String auth) {
-                jwtUtilService.authVerification(auth);
-                Pageable pageable = PageRequest.of(page, size);
+        jwtUtilService.authVerification(auth);
+        Pageable pageable = PageRequest.of(page, size);
         Page<Tercero> terceros = terceroService.obtenerTerceros(pageable);
         Page<TerceroDTO> tercerosDTO = new PageImpl<>(
                 terceros.stream()
@@ -52,8 +53,8 @@ public class TerceroController {
     }
 
     @GetMapping("/{nit}")
-    public ResponseEntity<TerceroDTO> mostrarTercero(@PathVariable String nit, 
-    @RequestHeader("Authorization") String auth) {
+    public ResponseEntity<TerceroDTO> mostrarTercero(@PathVariable String nit,
+            @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         Optional<Tercero> terceroOp = terceroService.obtenerTerceroPorNit(nit);
         if (terceroOp.isPresent()) {
@@ -63,37 +64,37 @@ public class TerceroController {
     }
 
     @PostMapping
-    public ResponseEntity<TerceroDTO> guardarTercero(@Valid @RequestBody TerceroDTO terceroDTO, 
-    BindingResult result, @RequestHeader("Authorization") String auth) {
+    public ResponseEntity<HttpStatus> guardarTercero(@Valid @RequestBody TerceroDTO terceroDTO,
+            BindingResult result, @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
         }
         jwtUtilService.authVerification(auth);
-        return ResponseEntity.ok()
-                .body(terceroMapper.pojoToDto(terceroService.guardarTercero(terceroMapper.dtoToPojo(terceroDTO))));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{nit}")
-    public ResponseEntity<Boolean> actualizarTercero(@PathVariable String nit, 
-    @Valid @RequestBody TerceroDTO terceroDTO, BindingResult result, @RequestHeader("Authorization") String auth){
+    public ResponseEntity<HttpStatus> actualizarTercero(@PathVariable String nit,
+            @Valid @RequestBody TerceroDTO terceroDTO, BindingResult result,
+            @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
             ResultError.validaciones(result);
         }
         jwtUtilService.authVerification(auth);
-        if (terceroService.actualizarTerceroPorNit(nit, terceroMapper.dtoToPojo(terceroDTO))){
-            return ResponseEntity.status(HttpStatus.CREATED).body(true);
+        if (terceroService.actualizarTerceroPorNit(nit, terceroMapper.dtoToPojo(terceroDTO))) {
+            return ResponseEntity.ok().build();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        throw new EntityNotFoundException("No existe el tercero con el NIT " + nit);
     }
 
     @DeleteMapping("/{nit}")
-    public ResponseEntity<Boolean> eliminarTercero(@PathVariable String nit, 
-    @RequestHeader("Authorization") String auth){
+    public ResponseEntity<HttpStatus> eliminarTercero(@PathVariable String nit,
+            @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
-        if (terceroService.eliminarTerceroPorNit(nit)){
-            return ResponseEntity.status(HttpStatus.OK).body(true);
+        if (terceroService.eliminarTerceroPorNit(nit)) {
+            return ResponseEntity.ok().build();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        throw new EntityNotFoundException("No existe el tercero con el NIT " + nit);
     }
 
 }

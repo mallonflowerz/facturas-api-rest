@@ -42,19 +42,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
 
                         // autenticacion
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
 
                         // productosYUsuarios
-                        .requestMatchers("/usuario").hasAnyRole("ADMIN")
-                        .requestMatchers("/producto").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/usuario").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/producto").hasAnyRole("ADMIN")
                         
                         // facturasVentas
-                        .requestMatchers("/tercero").hasAnyRole("ADMIN", "CONTADOR")
-                        .requestMatchers("/factura").hasAnyRole("ADMIN", "CONTADOR")
-                        .requestMatchers("/detalle").hasAnyRole("ADMIN", "CONTADOR")
+                        .requestMatchers("/api/v1/tercero").hasAnyRole("ADMIN", "CONTADOR")
+                        .requestMatchers("/api/v1/factura/**").hasAnyRole("ADMIN", "CONTADOR")
+                        .requestMatchers("/api/v1/detalle").hasAnyRole("ADMIN", "CONTADOR")
 
                         // backup
-                        .requestMatchers("/backup").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/backup").hasAnyRole("ADMIN")
 
                         .anyRequest()
                         .authenticated())
@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .logout()
-                .logoutUrl("/auth/logout").permitAll()
+                .logoutUrl("/api/v1/auth/logout").permitAll()
                 .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
 

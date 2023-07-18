@@ -31,7 +31,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/producto")
+@RequestMapping("/api/v1/producto")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -51,47 +51,48 @@ public class ProductoController {
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<?> verProductoPorCodigo(@PathVariable String codigo,
+    public ResponseEntity<ProductoDTO> verProductoPorCodigo(@PathVariable String codigo,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         Optional<Producto> o = productoService.verProductoPorCodigo(codigo);
         if (o.isPresent()) {
             return ResponseEntity.ok().body(mapper.pojoToDto(o.get()));
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException(String.format("El producto con el codigo %s no existe", codigo));
     }
 
     @GetMapping("/disp/{codigo}")
-    public ResponseEntity<Boolean> buscarCodigoDisponible(@PathVariable String codigo,
+    public ResponseEntity<HttpStatus> buscarCodigoDisponible(@PathVariable String codigo,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         boolean disponible = productoService.codigoDisponible(codigo);
         if (disponible) {
-            return ResponseEntity.ok().body(disponible);
+            return ResponseEntity.ok().build();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(disponible);
+        throw new EntityNotFoundException("El codigo indicado no existe");
     }
 
     @PostMapping
-    public ResponseEntity<ProductoDTO> crearProducto(@RequestBody ProductoDTO productoDTO,
+    public ResponseEntity<HttpStatus> crearProducto(@RequestBody ProductoDTO productoDTO,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         if (!productoService.codigoDisponible(productoDTO.getCodigo())) {
             throw new IllegalStateException();
         }
-        return ResponseEntity.ok().body(mapper.pojoToDto(
-                productoService.crearProducto(mapper.dtoToPojo(productoDTO))));
+        productoDTO.setNombreProducto(productoDTO.getNombreProducto().toUpperCase());
+        productoService.crearProducto(mapper.dtoToPojo(productoDTO));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{codigo}")
-    public ResponseEntity<?> actualizarProducto(@RequestBody ProductoDTO productoDTO,
+    public ResponseEntity<HttpStatus> actualizarProducto(@RequestBody ProductoDTO productoDTO,
             @PathVariable String codigo, @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         Producto p = productoService.modificarProductoPorCodigo(codigo, mapper.dtoToPojo(productoDTO));
         if (p != null) {
-            return ResponseEntity.ok().body(mapper.pojoToDto(p));
+            return ResponseEntity.ok().build();
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException("El producto indicado no existe");
     }
 
     @PutMapping("/cambiarDisponible/{codigo}")
@@ -104,19 +105,19 @@ public class ProductoController {
             return ResponseEntity.ok()
                     .body(new Response("El producto ha sido cambiado a el estado " + estado));
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException("El producto indicado no existe");
     }
 
     @DeleteMapping("/{codigo}")
-    public ResponseEntity<Response> eliminarProducto(@PathVariable String codigo,
+    public ResponseEntity<HttpStatus> eliminarProducto(@PathVariable String codigo,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         Optional<Producto> p = productoService.verProductoPorCodigo(codigo);
         if (p.isPresent()) {
             productoService.eliminarProductoPorId(p.get().getId());
-            return ResponseEntity.ok().body(new Response("El producto se ha eliminado con exito"));
+            return ResponseEntity.ok().build();
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException("El producto indicado no existe");
     }
 
 }

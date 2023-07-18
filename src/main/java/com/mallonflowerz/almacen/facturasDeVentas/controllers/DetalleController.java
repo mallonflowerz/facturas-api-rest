@@ -30,7 +30,7 @@ import com.mallonflowerz.almacen.facturasDeVentas.services.DetalleFacturaService
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-@RequestMapping("/detalle")
+@RequestMapping("/api/v1/detalle")
 @AllArgsConstructor
 @RestController
 public class DetalleController {
@@ -75,7 +75,7 @@ public class DetalleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Boolean> actualizarFactura(@PathVariable UUID id,
+    public ResponseEntity<HttpStatus> actualizarFactura(@PathVariable UUID id,
             @Valid @RequestBody DetalleFacturaDTO facturaDTO, BindingResult result,
             @RequestHeader("Authorization") String auth) {
         if (result.hasErrors()) {
@@ -83,17 +83,17 @@ public class DetalleController {
         }
         jwtUtilService.authVerification(auth);
         if (dfService.actualizarDetalleFactura(id, detalleMapper.dtoToPojo(facturaDTO))) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(true);
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> eliminarFactura(@PathVariable UUID id,
+    public ResponseEntity<HttpStatus> eliminarFactura(@PathVariable UUID id,
             @RequestHeader("Authorization") String auth) {
         jwtUtilService.authVerification(auth);
         if (dfService.eliminarDetalleFactura(id)) {
-            return ResponseEntity.ok().body(true);
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }

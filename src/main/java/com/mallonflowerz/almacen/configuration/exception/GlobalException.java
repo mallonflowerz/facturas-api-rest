@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 import com.mallonflowerz.almacen.productosYUsuarios.models.Response;
 
@@ -16,7 +17,7 @@ public class GlobalException {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response> handlerAllError(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new Response("Internal Error: " + ex.getMessage()));
+                .body(new Response("Exception: " + ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -25,10 +26,16 @@ public class GlobalException {
                 .body(new Response("Error: " + ex.getMessage()));
     }
 
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<Response> handlerTokenExpired(TokenExpiredException ex){
+    @ExceptionHandler(InternalServerError.class)
+    public ResponseEntity<Response> handlerInternalServerError(InternalServerError ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new Response("Internal Error: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Response> handlerTokenExpired(TokenExpiredException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new Response("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -39,7 +46,7 @@ public class GlobalException {
 
     @ExceptionHandler(EntityExistsException.class)
     public ResponseEntity<Response> handlerUserExits(EntityExistsException ex) {
-        return ResponseEntity.status(500).body(new Response("Error: " + ex.getMessage()));
+        return ResponseEntity.status(400).body(new Response("Error: " + ex.getMessage()));
     }
 
 }
