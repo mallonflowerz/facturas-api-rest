@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -43,6 +44,9 @@ public class Producto {
 
     @Column(nullable = false)
     private Boolean disponible;
+
+    @ColumnDefault(value = "false")
+    private boolean exederLote;
 
     @CreationTimestamp
     @Column(nullable = false)

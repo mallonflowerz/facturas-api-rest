@@ -55,6 +55,8 @@ public class ProductoDTO {
     @JsonAlias("enLote")
     private Boolean disponible;
 
+    private boolean exederLote;
+
     @JsonProperty(value = "fechaCreacion", required = false)
     @JsonAlias("fechaDeCreacion")
     private LocalDateTime fechaCreacion;

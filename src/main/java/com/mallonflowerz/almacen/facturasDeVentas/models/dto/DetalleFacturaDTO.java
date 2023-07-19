@@ -12,6 +12,8 @@ import lombok.Data;
 public class DetalleFacturaDTO {
 
     private UUID id;
+
+    private String codigo;
     
     @NotBlank(message = "no debe ser vacio")
     private String nombreProducto;

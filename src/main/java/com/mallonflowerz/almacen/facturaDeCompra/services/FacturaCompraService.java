@@ -16,6 +16,7 @@ import com.mallonflowerz.almacen.facturasDeVentas.models.entity.Tercero;
 import com.mallonflowerz.almacen.facturasDeVentas.repositories.TerceroRepository;
 import com.mallonflowerz.almacen.productosYUsuarios.models.entity.Producto;
 import com.mallonflowerz.almacen.productosYUsuarios.repositories.ProductoRepository;
+import com.mallonflowerz.almacen.productosYUsuarios.services.ProductoService;
 
 import lombok.AllArgsConstructor;
 
@@ -25,6 +26,7 @@ public class FacturaCompraService {
 
     private final FacturaCompraRepository facturaCompraRepository;
     private final TerceroRepository terceroRepository;
+    private final ProductoService productoService;
     private final ProductoRepository productoRepository;
 
     public Page<FacturaCompra> obtenerFacturas(Pageable pageable) {
@@ -59,6 +61,9 @@ public class FacturaCompraService {
         Optional<FacturaCompra> fact = facturaCompraRepository.findById(id);
         if (fact.isPresent()) {
             facturaCompraRepository.deleteById(id);
+            fact.get().getProductos().forEach(producto -> {
+                productoService.eliminarProductoPorId(producto.getId());
+            });
             return true;
         }
         return false;

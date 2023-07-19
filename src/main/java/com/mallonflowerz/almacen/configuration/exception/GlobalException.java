@@ -26,16 +26,16 @@ public class GlobalException {
                 .body(new Response("Error: " + ex.getMessage()));
     }
 
+    @ExceptionHandler(ExcesoCantidadException.class)
+    public ResponseEntity<Response> handlerCantidadException(ExcesoCantidadException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new Response("Error: " + ex.getMessage()));
+    }
+
     @ExceptionHandler(InternalServerError.class)
     public ResponseEntity<Response> handlerInternalServerError(InternalServerError ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new Response("Internal Error: " + ex.getMessage()));
-    }
-
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<Response> handlerTokenExpired(TokenExpiredException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new Response("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

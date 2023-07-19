@@ -23,6 +23,9 @@ public class DetalleFactura {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false)
+    private String codigo;
+
     @Column(nullable = false, length = 100)
     private String nombreProducto;
 

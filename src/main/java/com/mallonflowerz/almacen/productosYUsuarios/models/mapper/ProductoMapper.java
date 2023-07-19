@@ -19,6 +19,7 @@ public class ProductoMapper implements GenericMapper<Producto, ProductoDTO> {
                 .valorCompra(dto.getValorCompra())
                 .valorVenta(dto.getValorVenta())
                 .disponible(dto.getDisponible())
+                .exederLote(dto.isExederLote())
                 .fechaCreacion(dto.getFechaCreacion())
                 .fechaModificacion(dto.getFechaModificacion())
                 .build();
@@ -37,6 +38,7 @@ public class ProductoMapper implements GenericMapper<Producto, ProductoDTO> {
                 .valorCompra(pojo.getValorCompra())
                 .valorVenta(pojo.getValorVenta())
                 .disponible(pojo.getDisponible())
+                .exederLote(pojo.isExederLote())
                 .fechaCreacion(pojo.getFechaCreacion())
                 .fechaModificacion(pojo.getFechaModificacion())
                 .build();
